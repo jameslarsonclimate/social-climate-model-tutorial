@@ -1,52 +1,28 @@
 # Clean script to run the social climate model and create a plot
 
+##################################
 # Setup
-setwd('~/Documents/Research/social-climate-model/code')
+##################################
+setwd('~/Documents/Research/social-climate-model-tutorial/code')
 library(ggplot2)
 
 # Load the model
 source("src/model.R")
 
+
+##################################
 # Set model parameters
+##################################
 frac_opp_01 <- 0.5        # Fraction opposing climate policy at t=0
 frac_neut_01 <- 0.3       # Fraction neutral at t=0
 evidenceeffect1 <- 0.15    # Strength of evidence effect
 biassedassimilation1 <- 0.1  # Strength of biased assimilation
 shiftingbaselines1 <- 1   # Whether shifting baselines are active
 
-# Create a timeseries with a triangular pulse from index 10 to 20
-# Initialize a vector of 81 zeros and define the peak value
-ts <- numeric(81)
-peak <- 2
-
-# Create ascending values from index 10 to 15 and descending values from index 16 to 20
-ts[11:15] <- seq(0, peak, length.out = 6)
-ts[16:21] <- seq(peak - peak/5, 0, length.out = 5)
   
+##################################
 # Example output of internally generated natural variability that results in:
-# - Majority climate supporters in ~2055
-# - Net zero emissions in ~2090
-# ts <- c(
-#   0.133842953, -0.065487578, 0.129109393, -0.069017929, 0.584610252,
-#   0.319442202, 0.350141883, 0.856237555, 0.740352139, 0.318956116,
-#   0.505064617, 0.760360126, 0.094969291, -0.073465609, -0.116369872,
-#   -0.473726221, 0.157055352, -0.064971138, -0.132389645, 0.028965936,
-#   0.257804372, 0.325864269, 0.596301545, 0.310239613, -0.005382159,
-#   -0.125759004, -0.276082519, -0.480876377, -0.537635965, -0.435412122,
-#   -0.297650389, -0.319626429, -0.561412574, -0.715974137, -0.663435558,
-#   -0.390001544, -0.427180852, -0.408288461, 0.175796509, -0.226157358,
-#   -0.395769509, -0.250313217, -0.365319772, -0.231098545, 0.018702495,
-#   -0.242858404, 0.037601432, -0.040663705, 0.301615875, 0.126242778,
-#   -0.394601911, -0.117267255, 0.143090743, -0.127437175, 0.095114001,
-#   0.699648894, 0.942651981, 0.387641568, 0.861152703, 0.908385819,
-#   0.588097841, 0.917275321, 0.721406489, 0.535314193, 0.159254638,
-#   0.119618600, -0.114804506, 0.381691350, 0.274759474, -0.309654467,
-#   -0.162296890, -0.411838048, -0.242283146, -0.167290071, 0.028700409,
-#   -0.032134208, -0.398540297, -0.037209780, -0.202788485, -0.274764916,
-#   -0.518708527
-# )
-
-# Example output of internally generated natural variability that results in:
+##################################
 # - Majority climate supporters in ~2035
 # - Net zero emissions in ~2075
 # This is a climate that promotes climate supporters
@@ -90,8 +66,16 @@ ts <- c(
 
 
 
-# Run the model
-m <- model(natvar = ts, natvar_multiplier = 1)
+##################################
+# Run the model with the drawn parameters and natural variability time series.
+# If updating the model parameters, make sure to update fig_suffix as well!
+# Pass updated parameters to the model function, e.g.: 
+# model() or 
+# model(natvar = natvar_mat[i+1,], natvar_multiplier = 1) or 
+# model(temperature_anomaly = ts), 
+##################################
+# m <- model(natvar = ts, natvar_multiplier = 1)
+m <-  model()
 
 # Create a scaling coefficient for the secondary axis
 coeff <- 0.05
@@ -169,3 +153,13 @@ fig <- ggplot(data, aes(x = time)) +
 # Print and save the plot
 print(fig)
 ggsave("../results/standard_model_run.png", plot = fig, width = 8, height = 6)
+
+
+# ---- Tutorial demo: inspect the structure of model output ----
+# Uncomment to show students what the model returns and how analyses access it.
+# names(m)
+# str(m, max.level = 1)
+# head(m$year)
+# head(m$totalemissions)
+# head(m$temp[,1])
+# head(m$distributions)
